@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'celery_demo.apps.CeleryDemoConfig',
+    'rest_framework',
+    'hr.apps.HrConfig',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +132,10 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
         'celery': {
             'format': '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s'
         },
@@ -139,6 +145,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'celery',
         },
+        'hr_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(BASE_DIR, 'logs', 'hr.log'),
+            'maxBytes': 1024 * 1024,
+            'backupCount': 5,
+            'encoding': 'utf-8',
+            'delay': True,
+            'level': 'INFO',
+        }
     },
     'loggers': {
         'celery': {
@@ -149,5 +165,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        'hr.signals': {
+            'handlers': ['console', 'hr_file'],
+            'level': 'INFO',
+            'propagate': False,
+        }
     },
 }
