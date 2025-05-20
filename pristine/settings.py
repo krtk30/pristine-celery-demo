@@ -169,6 +169,11 @@ LOGGING = {
             'handlers': ['console', 'hr_file'],
             'level': 'INFO',
             'propagate': False,
+        },
+        'hr.tasks': {
+            'handlers': ['console', 'hr_file'],
+            'level': 'INFO',
+            'propagate': False,
         }
     },
 }
