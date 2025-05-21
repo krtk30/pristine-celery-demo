@@ -1,3 +1,4 @@
+# pylint: disable=django-not-configured
 """
 Test suite for Department and Employee API endpoints.
 """
@@ -85,6 +86,21 @@ class DepartmentAPITestCase(APITestCase):
         url = reverse("department-detail", args=[999])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_employees_action(self):
+        """Ensure the 'employees' action returns employees for a given department."""
+        # Create a new employee and assign to dept1
+        emp3 = Employee.objects.create(name="Charlie", email="charlie@example.com")
+        self.dept1.employees.add(emp3)
+        url = reverse("department-employees", args=[self.dept1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Response should be a list of employees in this department
+        data = response.data
+        self.assertIsInstance(data, list)
+        # The new employee should be present
+        ids = {e["id"] for e in data}
+        self.assertIn(emp3.pk, ids)
 
 
 class EmployeeAPITestCase(APITestCase):
@@ -212,6 +228,21 @@ class EmployeeAPITestCase(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Employee.objects.filter(pk=self.employee.pk).exists())
+
+    def test_departments_action(self):
+        """Ensure the 'departments' action returns departments for a given employee."""
+        # Create a new department and assign to employee
+        dep3 = Department.objects.create(name="Marketing")
+        self.employee.departments.add(dep3)
+        url = reverse("employee-departments", args=[self.employee.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Response should be a list of departments for this employee
+        data = response.data
+        self.assertIsInstance(data, list)
+        # The new department should be present
+        names = {d["name"] for d in data}
+        self.assertIn(dep3.name, names)
 
     def test_filter_employees_by_department(self):
         """Ensure filtering by department returns only matching employees."""
