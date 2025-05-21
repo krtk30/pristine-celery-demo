@@ -52,9 +52,21 @@ Once you’ve installed pre-commit and created .pre-commit-config.yaml, you can 
 
 ### Running Pre-commit Hooks
 
+On each commit, pre-commit runs: 
+1. pytest (95% coverage), 
+2. black (Code formatting), 
+3. isort (import sorting), 
+4. flake8 (code linting), 
+5. pylint (Static code analysis), and 
+6. mypy (Type checking).
+
 - **Run all hooks against all files**  
   ```bash
   poetry run pre-commit run --all-files
+  ```
+  we can target just one (or more) files by using the `--files` flag:
+  ```bash
+  poetry run pre-commit run --files hr/views.py
   ```
 - **Run a single hook**  
   ```bash
@@ -71,5 +83,4 @@ Once you’ve installed pre-commit and created .pre-commit-config.yaml, you can 
   ```
 - **Fix any issues** the hooks report, then recommit. Once everything passes, `git commit` will succeed.
 
-On each commit, pre-commit will run pytest and enforce 95% coverage threshold.
 ---
