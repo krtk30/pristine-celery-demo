@@ -1,5 +1,10 @@
+"""
+Serializers module for the HR app, defining Department and Employee serializers.
+"""
+
 from rest_framework import serializers
-from .models import Employee, Department
+
+from .models import Department, Employee
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -7,9 +12,10 @@ class DepartmentSerializer(serializers.ModelSerializer):
     Serializes Department instances.
         This serializer handles the serialization of Department objects.
     """
+
     class Meta:
         model = Department
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -19,17 +25,21 @@ class EmployeeSerializer(serializers.ModelSerializer):
         nested serialization of related departments and a custom message field.
 
         GET → departments with id+name
-	    POST/PUT → department_ids with just the IDs
+            POST/PUT → department_ids with just the IDs
     """
+
     departments = DepartmentSerializer(many=True, read_only=True)
     department_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), many=True, write_only=True, source="departments"
+        queryset=Department.objects.all(),
+        many=True,
+        write_only=True,
+        source="departments",
     )
     message = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'email', 'departments', 'department_ids', 'message']
+        fields = ["id", "name", "email", "departments", "department_ids", "message"]
 
     def get_message(self, obj):
         """

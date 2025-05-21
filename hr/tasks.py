@@ -1,4 +1,9 @@
+"""
+Celery task module for processing HR app many-to-many change signals asynchronously.
+"""
+
 import logging
+
 from celery import shared_task
 
 logger = logging.getLogger("hr.tasks")
@@ -14,9 +19,13 @@ def process_m2m_signal(self, instance_id: int, action: str, pk_list: list[int]) 
     :param pk_list: list of Department PKs added/removed
     """
     try:
-        msg = f"[m2m][{action}] Employee ID {instance_id}: Dept IDs {pk_list}"
-        logger.info(f"Processing signal task: {msg}")
+        logger.info(
+            "Processing signal task: [m2m][%s] Employee ID %s: Dept IDs %s",
+            action,
+            instance_id,
+            pk_list,
+        )
     except Exception as exc:
-        logger.error(f"Failed to process signal task: {exc}")
+        logger.error("Failed to process signal task: %s", exc)
         # retry on failure
         raise self.retry(exc=exc) from exc

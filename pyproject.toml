@@ -23,4 +23,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.11.1"
+pytest-cov = "^6.1.1"
+pre-commit = "^4.2.0"
 
+[tool.pytest.ini_options]
+addopts = "--cov=hr --cov-report=term-missing --cov-fail-under=95"
